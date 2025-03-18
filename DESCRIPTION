@@ -1,0 +1,34 @@
+Package: SLmetrics
+Title: Machine Learning Performance Evaluation on Steroids
+Version: 0.3-3
+Authors@R: c(
+    person(
+      given   = "Serkan", 
+      family  = "Korkmaz",
+      email   = "serkor1@duck.com", 
+      role    = c("cre", "aut", "cph"),
+      comment = c(ORCID = "0000-0002-5052-0982")
+      )
+  )
+Description: 
+  Performance evaluation metrics for supervised and unsupervised machine learning, statistical learning and artificial intelligence applications. Core computations are implemented in 'C++' for scalability and efficiency.
+License: GPL (>= 3)
+Encoding: UTF-8
+RoxygenNote: 7.3.2
+LinkingTo: Rcpp, RcppEigen
+Suggests: knitr, reticulate, rmarkdown, testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Imports: grDevices, lattice, Rcpp
+Depends: R (>= 4.3)
+URL: https://serkor1.github.io/SLmetrics/,
+        https://github.com/serkor1/SLmetrics
+BugReports: https://github.com/serkor1/SLmetrics/issues
+LazyData: true
+VignetteBuilder: knitr
+NeedsCompilation: yes
+Packaged: 2025-03-17 13:41:49 UTC; serkan
+Author: Serkan Korkmaz [cre, aut, cph]
+    (<https://orcid.org/0000-0002-5052-0982>)
+Maintainer: Serkan Korkmaz <serkor1@duck.com>
+Repository: CRAN
+Date/Publication: 2025-03-18 15:20:10 UTC
