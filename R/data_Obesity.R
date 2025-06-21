@@ -1,5 +1,8 @@
-#' Obesity Levels Dataset
+#' @rdname data_obesity
+#' 
+#' @title Obesity levels dataset
 #'
+#' @description
 #' This dataset is used to estimate obesity levels based on eating habits and physical
 #' condition. The data originates from the UCI Machine Learning Repository and has been
 #' preprocessed to include both predictors and a target variable.
@@ -43,6 +46,9 @@
 #'   \item{features}{A data frame containing various predictors related to eating habits, physical condition, and lifestyle.}
 #'   \item{target}{A list with two elements: \code{regression} (weight in kilograms) and \code{class} (obesity level classification).}
 #' }
-#' @source \url{https://archive.ics.uci.edu/dataset/544/estimation+of+obesity+levels+based+on+eating+habits+and+physical+condition}
+#' 
+#' @references
+#' Palechor, Fabio Mendoza, and Alexis De la Hoz Manotas. "Dataset for estimation of obesity levels based on eating habits and physical condition in individuals from Colombia, Peru and Mexico." Data in brief 25 (2019): 104344.
+#' 
 #' @keywords datasets
 "obesity"

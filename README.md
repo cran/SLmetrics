@@ -14,58 +14,37 @@ downloads](https://cranlogs.r-pkg.org/badges/last-month/SLmetrics?color=blue)](h
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![R-CMD-check](https://github.com/serkor1/SLmetrics/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/serkor1/SLmetrics/actions/workflows/R-CMD-check.yaml)
 [![R-hub](https://github.com/serkor1/SLmetrics/actions/workflows/rhub.yaml/badge.svg)](https://github.com/serkor1/SLmetrics/actions/workflows/rhub.yaml)
+[![Gitbook](https://github.com/serkor1/SLmetrics/actions/workflows/online-docs.yaml/badge.svg)](https://github.com/serkor1/SLmetrics/actions/workflows/online-docs.yaml)
 [![codecov](https://codecov.io/gh/serkor1/SLmetrics/branch/development/graph/badge.svg?token=X2osJDSRlN)](https://app.codecov.io/gh/serkor1/SLmetrics)
 [![CodeFactor](https://www.codefactor.io/repository/github/serkor1/slmetrics/badge)](https://www.codefactor.io/repository/github/serkor1/slmetrics)
 <!-- badges: end -->
 
-[{SLmetrics}](https://serkor1.github.io/SLmetrics/) is a lightweight `R`
+[{SLmetrics}](https://slmetrics-docs.gitbook.io/v1) is a lightweight `R`
 package written in `C++` and [{Rcpp}](https://github.com/RcppCore/Rcpp)
 for *memory-efficient* and *lightning-fast* machine learning performance
 evaluation; it’s like using a supercharged
 [{yardstick}](https://github.com/tidymodels/yardstick) but without the
 risk of soft to super-hard deprecations.
-[{SLmetrics}](https://serkor1.github.io/SLmetrics/) covers both
+[{SLmetrics}](https://slmetrics-docs.gitbook.io/v1) covers both
 regression and classification metrics and provides (almost) the same
 array of metrics as
 [{scikit-learn}](https://github.com/scikit-learn/scikit-learn) and
 [{PyTorch}](https://github.com/pytorch/pytorch) all without
 [{reticulate}](https://github.com/rstudio/reticulate) and the Python
-compile-run-(crash)-debug cylce.
+compile-run-(crash)-debug cycle.
 
 Depending on the mood and alignment of planets
-[{SLmetrics}](https://serkor1.github.io/SLmetrics/) stands for
+[{SLmetrics}](https://slmetrics-docs.gitbook.io/v1) stands for
 Supervised Learning metrics, or Statistical Learning metrics. If
-[{SLmetrics}](https://serkor1.github.io/SLmetrics/) catches on, the
+[{SLmetrics}](https://slmetrics-docs.gitbook.io/v1) catches on, the
 latter will be the core philosophy and include unsupervised learning
 metrics. If not, then it will remain a {pkg} for Supervised Learning
 metrics, and a sandbox for me to develop my `C++` skills.
 
-## :books: Table of Contents
-
-- [:rocket: Gettting Started](#rocket-gettting-started)
-  - [:package: CRAN version](#package-cran-version)
-  - [:books: Basic Usage](#books-basic-usage)
-- [:information_source: Why?](#information_source-why)
-- [:zap: Performance Comparison](#zap-performance-comparison)
-  - [:fast_forward: Speed comparison](#fast_forward-speed-comparison)
-  - [:floppy_disk: Memory-efficiency](#floppy_disk-memory-efficiency)
-- [:information_source: Basic usage](#information_source-basic-usage)
-  - [:books: Regression](#books-regression)
-  - [:books: Classification](#books-classification)
-- [:information_source: Enable
-  OpenMP](#information_source-enable-openmp)
-  - [:books: Entropy without OpenMP](#books-entropy-without-openmp)
-  - [:books: Entropy with OpenMP](#books-entropy-with-openmp)
-- [:package: Install from source](#package-installation)
-  - [Latest release](#github-release)
-  - [Nightly build](#nightly-build)
-- [:information_source: Code of
-  Conduct](#information_source-code-of-conduct)
-
 ## :rocket: Gettting Started
 
 Below you’ll find instructions to install
-[{SLmetrics}](https://serkor1.github.io/SLmetrics/) and get started with
+[{SLmetrics}](https://slmetrics-docs.gitbook.io/v1) and get started with
 your first metric, the Root Mean Squared Error (RMSE).
 
 ### :package: CRAN version
@@ -107,7 +86,7 @@ cat(
 
 That’s all! Now you can explore the rest of this README for in-depth
 usage, performance comparisons, and more details about
-[{SLmetrics}](https://serkor1.github.io/SLmetrics/).
+[{SLmetrics}](https://slmetrics-docs.gitbook.io/v1).
 
 ## :information_source: Why?
 
@@ -117,7 +96,7 @@ decisions. One low-hanging fruit to simplify this process is
 *performance evaluation*.
 
 At its core, performance evaluation is essentially just comparing two
-vectors — a programmatically and, at times, mathematically trivial step
+vectors - a programmatically and, at times, mathematically trivial step
 in the machine learning pipeline, but one that can become complicated
 due to:
 
@@ -125,7 +104,7 @@ due to:
 2.  Needlessly complex or repetitive arguments  
 3.  Performance and memory bottlenecks at scale
 
-[{SLmetrics}](https://serkor1.github.io/SLmetrics/) solves these issues
+[{SLmetrics}](https://slmetrics-docs.gitbook.io/v1) solves these issues
 by being:
 
 1.  **Fast:** Powered by `C++` and
@@ -133,16 +112,15 @@ by being:
 2.  **Memory-efficient:** Everything is structured around pointers and
     references
 3.  **Lightweight:** Only depends on
-    [{Rcpp}](https://github.com/RcppCore/Rcpp),
-    [{RcppEigen}](https://github.com/RcppCore/RcppEigen), and
+    [{Rcpp}](https://github.com/RcppCore/Rcpp) and
     [{lattice}](https://github.com/deepayan/lattice)
 4.  **Simple:** S3-based, minimal overhead, and flexible inputs
 
 Performance evaluation should be plug-and-play and “just work” out of
-the box — there’s no need to worry about *quasiquations*,
+the box - there’s no need to worry about *quasiquations*,
 *dependencies*, *deprecations*, or variations of the same functions
 relative to their arguments when using
-[{SLmetrics}](https://serkor1.github.io/SLmetrics/).
+[{SLmetrics}](https://slmetrics-docs.gitbook.io/v1).
 
 ## :zap: Performance Comparison
 
@@ -155,11 +133,11 @@ RMSE[^1].
 
 ### :fast_forward: Speed comparison
 
-<img src=".meta/README/README_files/figure-commonmark/plot%20speed-performance-1.png"
+<img src=".meta/readme/README_files/figure-commonmark/plot%20speed-performance-1.png"
 style="width:100.0%" />
 
 As shown in the chart,
-[{SLmetrics}](https://serkor1.github.io/SLmetrics/) maintains
+[{SLmetrics}](https://slmetrics-docs.gitbook.io/v1) maintains
 consistently low(er) execution times across different sample sizes.
 
 ### :floppy_disk: Memory-efficiency
@@ -167,7 +145,7 @@ consistently low(er) execution times across different sample sizes.
 Below are the results for garbage collections and total memory
 allocations when computing a 2×2 confusion matrix (N = 1e7) and RMSE (N
 = 1e7) [^2]. Notice that
-[{SLmetrics}](https://serkor1.github.io/SLmetrics/) requires no GC calls
+[{SLmetrics}](https://slmetrics-docs.gitbook.io/v1) requires no GC calls
 for these operations.
 
 |  | Iterations | Garbage Collections \[gc()\] | gc() pr. second | Memory Allocation (MB) |
@@ -188,7 +166,7 @@ for these operations.
 
 RMSE (N = 1e7)
 
-In both tasks, [{SLmetrics}](https://serkor1.github.io/SLmetrics/)
+In both tasks, [{SLmetrics}](https://slmetrics-docs.gitbook.io/v1)
 remains extremely memory-efficient, even at large sample sizes.
 
 > \[!IMPORTANT\]
@@ -202,7 +180,7 @@ remains extremely memory-efficient, even at large sample sizes.
 ## :information_source: Basic usage
 
 In its simplest form,
-[{SLmetrics}](https://serkor1.github.io/SLmetrics/)-functions work
+[{SLmetrics}](https://slmetrics-docs.gitbook.io/v1)-functions work
 directly with pairs of `<numeric>` vectors (for regression) or
 `<factor>` vectors (for classification). Below we demonstrate this on
 two well-known datasets, `mtcars` (regression) and `iris`
@@ -289,14 +267,14 @@ summary(
 
 > \[!IMPORTANT\]
 >
-> OpenMP support in [{SLmetrics}](https://serkor1.github.io/SLmetrics/)
+> OpenMP support in [{SLmetrics}](https://slmetrics-docs.gitbook.io/v1)
 > is experimental. Use it with caution, as performance gains and
 > stability may vary based on your system configuration and workload.
 
 You can control OpenMP usage within
-[{SLmetrics}](https://serkor1.github.io/SLmetrics/) using the
-setUseOpenMP function. Below are examples demonstrating how to enable
-and disable OpenMP:
+[{SLmetrics}](https://slmetrics-docs.gitbook.io/v1) using `openmp.on()`
+and `openmp.off()` . Below are examples demonstrating how to enable and
+disable OpenMP:
 
 ``` r
 ## enable OpenMP
@@ -342,17 +320,31 @@ pak::pak(
 
 ### Nightly build
 
+#### Clone repository with submodules
+
+``` console
+git clone --recurse-submodules https://github.com/serkor1/SLmetrics.git
+```
+
+#### Installing with build tools
+
+``` console
+make build
+```
+
+#### Installing with {pak}
+
 ``` r
 ## install nightly build
 pak::pak(
-    pkg = "serkor1/SLmetrics",
+    pkg = ".",
     ask = FALSE
 )
 ```
 
 ## :information_source: Code of Conduct
 
-Please note that the [{SLmetrics}](https://serkor1.github.io/SLmetrics/)
+Please note that the [{SLmetrics}](https://slmetrics-docs.gitbook.io/v1)
 project is released with a [Contributor Code of
 Conduct](https://contributor-covenant.org/version/2/1/CODE_OF_CONDUCT.html).
 By contributing to this project, you agree to abide by its terms.

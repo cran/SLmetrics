@@ -44,7 +44,7 @@ weights <- runif(
 )
 ```
 
-Assume that the `predicted` values come from a trained machine learning model. This vignette introduces a subset of the metrics available in [{SLmetrics}](https://github.com/serkor1/SLmetrics); see the [online documentation](https://serkor1.github.io/SLmetrics/) for more details and other metrics.
+Assume that the `predicted` values come from a trained machine learning model. This vignette introduces a subset of the metrics available in [{SLmetrics}](https://github.com/serkor1/SLmetrics); see the [online documentation](https://slmetrics-docs.gitbook.io/v1) for more details and other metrics.
 
 ## Computing classification metrics
 
@@ -80,21 +80,21 @@ tpr(
 )
 ```
 
-By default, all classification functions calculates the class-wise performance metrics where possible. The performance metrics can also be aggregated in `micro` and `macro` averages by using the `micro`-parameter:
+By default, all classification functions calculates the class-wise performance metrics where possible. The performance metrics can also be aggregated in `micro` and `macro` averages by using the `estimator`-parameter:
 
 ```{r}
 # 1) macro average
 recall(
     actual    = actual,
     predicted = predicted,
-    micro     = FALSE 
+    estimator = 2 # macro average: 2
 )
 
 # 2) micro average
 recall(
     actual    = actual,
     predicted = predicted,
-    micro     = TRUE
+    estimator = 1 # micro average: 1
 )
 ```
 

@@ -59,14 +59,14 @@ tpr(
 recall(
     actual    = actual,
     predicted = predicted,
-    micro     = FALSE 
+    estimator = 2 # macro average: 2
 )
 
 # 2) micro average
 recall(
     actual    = actual,
     predicted = predicted,
-    micro     = TRUE
+    estimator = 1 # micro average: 1
 )
 
 ## -----------------------------------------------------------------------------

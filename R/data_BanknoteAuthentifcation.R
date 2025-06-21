@@ -1,5 +1,8 @@
-#' Banknote Authentication Dataset
+#' @rdname data_banknote
+#' 
+#' @title Banknote authentication dataset
 #'
+#' @description
 #' This dataset contains features extracted from the wavelet transform of banknote
 #' images, which are used to classify banknotes as authentic or inauthentic. The data
 #' originates from the UCI Machine Learning Repository.
@@ -33,6 +36,10 @@
 #'   \item{target}{A factor with levels \code{"inauthentic"} and \code{"authentic"}
 #'   representing the banknote's authenticity.}
 #' }
-#' @source \url{https://archive.ics.uci.edu/dataset/267/banknote+authentication}
+#' 
+#' @references 
+#' 
+#' Gillich, Eugen & Lohweg, Volker. (2010). Banknote Authentication. 
+#' 
 #' @keywords datasets
 "banknote"

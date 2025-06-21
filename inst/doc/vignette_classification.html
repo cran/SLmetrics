@@ -369,7 +369,7 @@ values. Both are vectors of [factor] values.</p>
 <span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>)</span></code></pre></div>
 <p>Assume that the <code>predicted</code> values come from a trained
 machine learning model. This vignette introduces a subset of the metrics
-available in <a href="https://github.com/serkor1/SLmetrics">{SLmetrics}</a>; see the <a href="https://serkor1.github.io/SLmetrics/">online documentation</a> for
+available in <a href="https://github.com/serkor1/SLmetrics">{SLmetrics}</a>; see the <a href="https://slmetrics-docs.gitbook.io/v1">online documentation</a> for
 more details and other metrics.</p>
 <div id="computing-classification-metrics" class="section level2">
 <h2>Computing classification metrics</h2>
@@ -411,12 +411,12 @@ metrics can be calculated as follows:</p>
 <p>By default, all classification functions calculates the class-wise
 performance metrics where possible. The performance metrics can also be
 aggregated in <code>micro</code> and <code>macro</code> averages by
-using the <code>micro</code>-parameter:</p>
+using the <code>estimator</code>-parameter:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># 1) macro average</span></span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">recall</span>(</span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>    <span class="at">actual    =</span> actual,</span>
 <span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    <span class="at">predicted =</span> predicted,</span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>    <span class="at">micro     =</span> <span class="cn">FALSE</span> </span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>    <span class="at">estimator =</span> <span class="dv">2</span> <span class="co"># macro average: 2</span></span>
 <span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>)</span>
 <span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#&gt; [1] 0.3055556</span></span>
 <span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a></span>
@@ -424,7 +424,7 @@ using the <code>micro</code>-parameter:</p>
 <span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="fu">recall</span>(</span>
 <span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>    <span class="at">actual    =</span> actual,</span>
 <span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>    <span class="at">predicted =</span> predicted,</span>
-<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>    <span class="at">micro     =</span> <span class="cn">TRUE</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>    <span class="at">estimator =</span> <span class="dv">1</span> <span class="co"># micro average: 1</span></span>
 <span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>)</span>
 <span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="co">#&gt; [1] 0.3</span></span></code></pre></div>
 <p>Calculating multiple performance metrics using separate calls to
@@ -518,7 +518,7 @@ following example:</p>
 <span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="fu">try</span>(</span>
 <span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>    <span class="fu">weighted.accuracy</span>(weighted_confusion_matrix)</span>
 <span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>)</span>
-<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="co">#&gt; Error in UseMethod(generic = &quot;weighted.accuracy&quot;, object = ..1) : </span></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="co">#&gt; Error in UseMethod(generic = &quot;weighted.accuracy&quot;) : </span></span>
 <span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a><span class="co">#&gt;   no applicable method for &#39;weighted.accuracy&#39; applied to an object of class &quot;cmatrix&quot;</span></span></code></pre></div>
 <p>This approach throws an error. Instead, pass the weighted confusion
 matrix into the unweighted function that uses a confusion matrix

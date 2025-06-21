@@ -1,22 +1,396 @@
 
 
-> Version 0.3-3 is considered pre-release of {SLmetrics}. We do not
+> Version 0.3-4 is considered pre-release of {SLmetrics}. We do not
 > expect any breaking changes, unless a major bug/issue is reported and
 > its nature forces breaking changes.
+
+# :bookmark: Version 0.3-4
+
+This update has been focused on two three things:
+
+1.  Optimization of the back-end by using Armadillo instead of Eigen.
+2.  Streamlining and extending the documentation
+3.  Making functions more flexible
+
+As an example on the increased flexibility is the introduction of the
+`estimator`-argument in classification metrics - the new approach
+enables new additions of aggregation methods as the field evolves. The
+“old” approach were limited to three values `NULL`, `TRUE` and `FALSE`.
+Furthermore the function signatures of the generics have been made more
+flexible - this will enable possible wrapping packages to freely
+implement argument names off the generic.
+
+## :sparkles: Improvements
+
+- **Armadillo backend:** All functions have been ported to the C++
+  Armadillo library, and are heavily templated and Object Oriented. The
+  functions are 5-20x faster than before.
+- **Streamlined documentation:** All documentation have been reworked,
+  and are now using generic {roxygen2} templates. The new structure of
+  the documentation is focused on shared documentation and therefore
+  equal metrics like `recall` and `sensitivity` are aliased, and
+  referenced differently - as a result there should be less noise in the
+  documentation. The *creating factor* has been removed, and all
+  examples are simplified.
+- **Efficient multi-metric evaluation:** The Precision-Recall and
+  Receiver Operator Characteristics functions now accepts an `indices`
+  argument. The indices takes an `integer`-matrix of corresponding to
+  the sorted probabilities column-wise. See below:
+
+``` r
+## Classes and
+## seed
+set.seed(1903)
+classes <- c("Kebab", "Falafel")
+
+## Generate actual classes
+## and response probabilities
+actual_classes <- factor(
+    x = sample(
+      x = classes, 
+      size = 1e2, 
+      replace = TRUE, 
+      prob = c(0.7, 0.3)
+    )
+)
+
+response_probabilities <- ifelse(
+    actual_classes == "Kebab", 
+    rbeta(sum(actual_classes == "Kebab"), 2, 5), 
+    rbeta(sum(actual_classes == "Falafel"), 5, 2)
+)
+
+## Construct response
+## matrix
+probability_matrix <- cbind(
+    response_probabilities,
+    1 - response_probabilities
+)
+
+## Calculate Precision-Recall
+stopifnot(
+    all.equal(
+        target  = SLmetrics::pr.curve(actual_classes, probability_matrix),
+        current = SLmetrics::pr.curve(actual_classes, probability_matrix, indices = SLmetrics::preorder(probability_matrix, TRUE))
+    )
+)
+```
+
+Depending on the system and data, there is a 3x gain in speed. This
+approach is highly efficient for cases where multiple AUC or curves are
+to be computed as it avoids sorting the same probability matrix more
+than once.
+
+## :bug:-fixes
+
+- **Relative Root Mean Squared Error:** Normalizing the `RMSE` using the
+  `range`, the `range` is always calculated by the distance between
+  `max(actual) - min(actual)` instead of the weighted distance.
+
+### :rocket: New features
+
+- **Hamming Loss:** The fraction of the wrong labels to the total number
+  of labels, i.e. , where is the target, is the prediction, and is the
+  “Exclusive, or” operator that returns zero when the target and
+  prediction are identical and one otherwise. The interface to
+  `hammingloss()` is given below:
+
+``` r
+set.seed(1903)
+
+## classes
+classes <- c("Kebab", "Falafel")
+
+## actual and
+## predicted classes
+actual    <- factor(sample(classes, 10, TRUE))
+predicted <- factor(sample(classes, 10, TRUE))
+w         <- runif(n = 10)
+
+## calculate hamming
+## loss (weighted and unweighted)
+SLmetrics::hammingloss(
+    actual,
+    predicted
+)
+#> [1] 1
+
+SLmetrics::weighted.hammingloss(
+    actual,
+    predicted,
+    w = w
+)
+#> [1] 1
+```
+
+- **Tweedie Deviance:** The interface to `tweedie.deviance()` is given
+  below:
+
+``` r
+## Generate actual
+## and predicted values
+actual_values <- c(1.3, 0.4, 1.2, 1.4, 1.9, 1.0, 1.2)
+
+predicted_values <- c(0.7, 0.5, 1.1, 1.2, 1.8, 1.1, 0.2)
+
+## Evaluate performance
+SLmetrics::deviance.tweedie(
+   actual_values, 
+   predicted_values
+)
+#> [1] 0.9976545
+```
+
+- **Gamma Deviance:** The interface to `gamma.deviance()` is given
+  below:
+
+``` r
+## Generate actual
+## and predicted values
+actual_values <- c(1.3, 0.4, 1.2, 1.4, 1.9, 1.0, 1.2)
+
+predicted_values <- c(0.7, 0.5, 1.1, 1.2, 1.8, 1.1, 0.2)
+
+## Evaluate performance
+SLmetrics::deviance.gamma(
+   actual_values, 
+   predicted_values
+)
+#> [1] 0.9976545
+```
+
+- **Poisson Deviance:** The interface to `poisson.deviance()` is given
+  below:
+
+``` r
+## Generate actual
+## and predicted values
+actual_values <- c(1.3, 0.4, 1.2, 1.4, 1.9, 1.0, 1.2)
+
+predicted_values <- c(0.7, 0.5, 1.1, 1.2, 1.8, 1.1, 0.2)
+
+## Evaluate performance
+SLmetrics::deviance.poisson(
+   actual_values, 
+   predicted_values
+)
+#> [1] 0.3980706
+```
+
+- **Mean Arctangent Absolute Error:** The metric can be calculated as
+  follows:
+
+``` r
+## Generate actual
+## and predicted values
+actual_values <- c(1.3, 0.4, 1.2, 1.4, 1.9, 1.0, 1.2)
+
+predicted_values <- c(0.7, 0.5, 1.1, 1.2, 1.8, 1.1, 0.2)
+
+## Evaluate performance
+SLmetrics::maape(
+   actual_values, 
+   predicted_values
+)
+#> [1] 0.2499164
+```
+
+- **Geometric Mean Squared Error:** The function have been implemented
+  with logs and antilogs and is robust to zero-valued vectors. The
+  metric can be calculated as follows:
+
+``` r
+## Generate actual
+## and predicted values
+actual_values <- c(1.3, 0.4, 1.2, 1.4, 1.9, 1.0, 1.2)
+
+predicted_values <- c(0.7, 0.5, 1.1, 1.2, 1.8, 1.1, 0.2)
+
+## Evaluate performance
+SLmetrics::gmse(
+   actual_values, 
+   predicted_values
+)
+#> [1] 0.03926918
+```
+
+## :bug: Bug-fixes
+
+## :boom: Breaking changes
+
+- **Area under the curve:** The new interface is given below:
+
+``` r
+## Generate x and y
+## pair
+x <- seq(0, pi, length.out = 200)
+y <- sin(x)
+
+## 1.1) calculate area
+SLmetrics::auc.xy(y = y,  x = x)
+#> [1] 1.999958
+```
+
+- **Receiver Operating Characteristics:** The new interface is given
+  below:
+
+``` r
+## define classes
+## and response probabilities
+actual   <- factor(c("Class A", "Class B", "Class A"))
+response <- matrix(cbind(
+    0.2, 0.8,
+    0.8, 0.2,
+    0.7, 0.3
+),nrow = 3, ncol = 2)
+
+## receiver operating curve
+SLmetrics::roc.curve(
+    actual,
+    response
+)
+#>    threshold level   label fpr tpr
+#> 1        Inf     1 Class A 0.0 0.0
+#> 2        0.8     1 Class A 1.0 0.0
+#> 3        0.8     1 Class A 1.0 0.5
+#> 4        0.2     1 Class A 1.0 1.0
+#> 5       -Inf     1 Class A 1.0 1.0
+#> 6        Inf     2 Class B 0.0 0.0
+#> 7        0.7     2 Class B 0.0 1.0
+#> 8        0.3     2 Class B 0.5 1.0
+#> 9        0.2     2 Class B 1.0 1.0
+#> 10      -Inf     2 Class B 1.0 1.0
+
+## area under the receiver operating
+## curve
+SLmetrics::auc.roc.curve(
+    actual,
+    response,
+    estimator = 0 # 0: class-wise, 1: micro average, 2: macro average 
+)
+#> Class A Class B 
+#>       0       1
+```
+
+- **Precision-Recall Curve:** The new interface is given below:
+
+``` r
+## define classes
+## and response probabilities
+actual   <- factor(c("Class A", "Class B", "Class A"))
+response <- matrix(cbind(
+    0.2, 0.8,
+    0.8, 0.2,
+    0.7, 0.3
+),nrow = 3, ncol = 2)
+
+## precision-recall curve
+SLmetrics::pr.curve(
+    actual,
+    response
+)
+#>    threshold level   label recall precision
+#> 1        Inf     1 Class A    0.0     1.000
+#> 2        0.8     1 Class A    0.0     0.000
+#> 3        0.8     1 Class A    0.5     0.500
+#> 4        0.2     1 Class A    1.0     0.667
+#> 5       -Inf     1 Class A    1.0     0.667
+#> 6        Inf     2 Class B    0.0     1.000
+#> 7        0.7     2 Class B    1.0     1.000
+#> 8        0.3     2 Class B    1.0     0.500
+#> 9        0.2     2 Class B    1.0     0.333
+#> 10      -Inf     2 Class B    1.0     0.333
+
+## area under the precision-recall
+## curve
+SLmetrics::auc.pr.curve(
+    actual,
+    response,
+    estimator = 0 # 0: class-wise, 1: micro average, 2: macro average 
+)
+#>   Class A   Class B 
+#> 0.4166667 1.0000000
+```
+
+- **Entropy:** `entropy()` has been renamed to `shannon.entropy()`. The
+  new interface to `shannon.entropy()` is given below:
+
+``` r
+## Observed probabilities
+pk <- matrix(
+  cbind(1/2, 1/2),
+  ncol = 2
+)
+
+## Shannon Entropy
+SLmetrics::shannon.entropy(pk)
+#> [1] 0.6931472
+```
+
+The entropy functions have had the `base`-argument removed, and a new
+argument has been introduced: `normalize`. The `normalize`-parameter
+averages the calculated entropy across the desired dimensions.
+
+- **Aggregation in classification metrics:** The aggregation flag in the
+  classification functions `micro` have been replaced with the
+  `integer`-argument `estimator` which falls back to class-wise
+  evaluation if misspecified. The new interface is given below and is
+  applicable to all functions that has this argument:
+
+``` r
+set.seed(1903)
+
+## classes
+classes <- c("Kebab", "Falafel")
+
+## actual and
+## predicted classes
+actual    <- factor(sample(classes, 10, TRUE))
+predicted <- factor(sample(classes, 10, TRUE))
+
+## recall: class-wise
+SLmetrics::recall(
+    actual,
+    predicted,
+    estimator = 0
+)
+#> Falafel   Kebab 
+#>       0       0
+
+## recall: micro-averaged
+SLmetrics::recall(
+    actual,
+    predicted,
+    estimator = 1
+)
+#> [1] 0
+
+## recall: macro-averaged
+SLmetrics::recall(
+    actual,
+    predicted,
+    estimator = 1
+)
+#> [1] 0
+```
+
+- **Poisson Logloss:** The `logloss()` for count data
+  `logloss.integer()` were taking a `matrix` of probabilities. This has
+  been changed to a `vector` of probabilities.
 
 # :bookmark: Version 0.3-3
 
 ## :sparkles: Improvements
 
-- **S3 signatures:** All S3-methods now have a generic signature, the
-  functions should now be easier to navigate in argument-wise.
+- **Initial CRAN release:** The R-package has (finally) been submitted
+  to CRAN and was released on 2025-03-18 with the classic “Thanks, on
+  its way to CRAN” message.
+
+- **S3 signatures:** All S3-methods now have a generic signature, making
+  it easier to navigate the functions argument-wise.
 
 - **Exported Data:** Three new datasets have been introduced to the
-  package; the [Wine
-  Quality](https://archive.ics.uci.edu/dataset/186/wine+quality)-,
-  [Obesity](https://archive.ics.uci.edu/dataset/544/estimation+of+obesity+levels+based+on+eating+habits+and+physical+condition)-
-  and [Banknote
-  Authentication](https://archive.ics.uci.edu/dataset/267/banknote+authentication)
+  package; the Wine Quality-, Obesity- and Banknote Authentication
   datasets. Each dataset is comes in named `list` where features and
   targets are stored separately. Below is an example from the Obesity
   dataset:
@@ -338,7 +712,7 @@ SLmetrics::setUseOpenMP(TRUE)
 #> OpenMP usage set to: enabled
 system.time(SLmetrics::entropy(pk))
 #>    user  system elapsed 
-#>   0.009   0.004   0.001
+#>   0.010   0.003   0.001
 
 SLmetrics::setUseOpenMP(FALSE)
 #> OpenMP usage set to: disabled
@@ -441,11 +815,11 @@ cat(
   sep = "\n"
 )
 #> Mean Relative Root Mean Squared Error
-#> 8.784975
+#> -4.686365
 #> Range Relative Root Mean Squared Error
-#> 0.1951562
+#> 0.1943122
 #> IQR Relative Root Mean Squared Error
-#> 0.5694271
+#> 0.8692987
 ```
 
 - **Log Loss:** Weighted and unweighted Log Loss, with and without
@@ -534,9 +908,9 @@ SLmetrics::cmatrix(
     predicted = predicted
 )
 #>   a b c
-#> a 5 8 4
-#> b 5 7 2
-#> c 9 6 4
+#> a 4 5 3
+#> b 6 6 7
+#> c 5 8 6
 
 ## 3) weighted confusion
 ## matrix
@@ -546,9 +920,9 @@ SLmetrics::weighted.cmatrix(
     w         = weights
 )
 #>          a        b        c
-#> a 2.322289 2.454870 1.638391
-#> b 2.766585 4.259595 0.550205
-#> c 3.620850 3.732882 2.151884
+#> a 2.551064 2.859906 2.205269
+#> b 2.577943 1.947142 3.013536
+#> c 1.935559 3.522135 4.064463
 ```
 
 # :bookmark: Version 0.2-0
@@ -588,10 +962,10 @@ SLmetrics::cmatrix(
     actual    = actual,
     predicted = predicted
 )
-#>   a b c
-#> a 7 4 5
-#> b 3 8 5
-#> c 9 4 5
+#>    a  b  c
+#> a  8  4  6
+#> b  4  3  5
+#> c  4 10  6
 
 SLmetrics::cmatrix(
     actual    = actual,
@@ -599,9 +973,9 @@ SLmetrics::cmatrix(
     w         = weights
 )
 #>          a        b        c
-#> a 3.834480 1.594902 2.070598
-#> b 2.100894 3.949499 1.813142
-#> c 4.363751 2.002751 2.396716
+#> a 2.858602 2.064648 4.187036
+#> b 1.598406 1.395218 3.285804
+#> c 1.457663 4.459990 3.001868
 ```
 
 Calculating weighted metrics using the `<factor>`- or
@@ -621,7 +995,7 @@ confusion_matrix <- SLmetrics::cmatrix(
 SLmetrics::accuracy(
     confusion_matrix
 )
-#> [1] 0.4219674
+#> [1] 0.2984745
 
 ## 2) weighted accuracy
 ## using <factor> method
@@ -630,7 +1004,7 @@ SLmetrics::weighted.accuracy(
     predicted = predicted,
     w         = weights
 )
-#> [1] 0.4219674
+#> [1] 0.2984745
 ```
 
 Please note, however, that it is not possible to pass `cmatrix()`-into
@@ -701,9 +1075,9 @@ w         <- runif(n = 50)
 ## 2) weighted and unweighted
 ## root mean squared error
 SLmetrics::rmse(actual, predicted)
-#> [1] 0.9705207
+#> [1] 0.9109375
 SLmetrics::weighted.rmse(actual, predicted, w = w)
-#> [1] 0.9819614
+#> [1] 0.7965708
 ```
 
 - The `rrmse()`-function have been removed in favor of the
@@ -720,12 +1094,12 @@ SLmetrics::weighted.rmse(actual, predicted, w = w)
 
 ## :sparkles: Improvements
 
-- **NA-controls:** All pair-wise metrics that doesn’t have a
+- **NA-controls:** All pair-wise metrics that don’t have a
   `micro`-argument were handling missing values as according to C++ and
   {Rcpp} internals. See
   [Issue](https://github.com/serkor1/SLmetrics/issues/8). Thank you
   @EmilHvitfeldt for pointing this out. This has now been fixed so
-  functions uses an `na.rm`-argument to explicitly control for this. See
+  functions use an `na.rm`-argument to explicitly control for this. See
   below,
 
 ``` r
@@ -793,23 +1167,23 @@ par(mfrow = c(1,2))
 plot(roc_obj, panels = FALSE)
 ```
 
-<img src="meta/CHANGELOG/v0.1-1_files/figure-commonmark/unnamed-chunk-4-1.png"
+<img src=".meta/changelog/src/v0.1-1_files/figure-commonmark/unnamed-chunk-4-1.png"
 style="width:100.0%" />
 
 ``` r
 plot(pr_obj, panels = FALSE)
 ```
 
-<img src="meta/CHANGELOG/v0.1-1_files/figure-commonmark/unnamed-chunk-4-2.png"
+<img src=".meta/changelog/src/v0.1-1_files/figure-commonmark/unnamed-chunk-4-2.png"
 style="width:100.0%" />
 
-# :package: [{SLmetrics}](https://serkor1.github.io/SLmetrics/) Version 0.1-0
+# :package: [{SLmetrics}](https://slmetrics-docs.gitbook.io/v1) Version 0.1-0
 
-[{SLmetrics}](https://serkor1.github.io/SLmetrics/) is a collection of
+[{SLmetrics}](https://slmetrics-docs.gitbook.io/v1) is a collection of
 Machine Learning performance evaluation functions for supervised
-learning written in `C++`
-with[{Rcpp}](https://github.com/RcppCore/Rcpp). Visit the online
-documentation on [Github pages](https://serkor1.github.io/SLmetrics/).
+learning written in `C++` with
+[{Rcpp}](https://github.com/RcppCore/Rcpp). Visit the online
+documentation on [Github pages](https://slmetrics-docs.gitbook.io/v1).
 
 ## :information_source: Basic usage
 
@@ -828,7 +1202,7 @@ predicted <- factor(
 
 ## 2) print values
 print(actual)
-#>  [1] b a a b a a c b c c
+#>  [1] a c a c a b c a a a
 #> Levels: a b c
 ```
 
@@ -844,16 +1218,16 @@ summary(
 #> Confusion Matrix (3 x 3) 
 #> ================================================================================
 #>   a b c
-#> a 2 1 1
-#> b 1 2 0
-#> c 0 1 2
+#> a 2 2 2
+#> b 0 0 1
+#> c 1 1 1
 #> ================================================================================
 #> Overall Statistics (micro average)
-#>  - Accuracy:          0.60
-#>  - Balanced Accuracy: 0.61
-#>  - Sensitivity:       0.60
-#>  - Specificity:       0.80
-#>  - Precision:         0.60
+#>  - Accuracy:          0.30
+#>  - Balanced Accuracy: 0.22
+#>  - Sensitivity:       0.30
+#>  - Specificity:       0.65
+#>  - Precision:         0.30
 ```
 
 ``` r
@@ -861,7 +1235,7 @@ summary(
 ## using <cmatrix> method
 SLmetrics::fpr(confusion_matrix)
 #>         a         b         c 
-#> 0.1666667 0.2857143 0.1428571
+#> 0.2500000 0.3333333 0.4285714
 
 ## 2) false positive rate
 ## using <factor> method
@@ -870,7 +1244,7 @@ SLmetrics::fpr(
     predicted = predicted
 )
 #>         a         b         c 
-#> 0.1666667 0.2857143 0.1428571
+#> 0.2500000 0.3333333 0.4285714
 ```
 
 ### Regression metrics
@@ -889,11 +1263,11 @@ SLmetrics::huberloss(
     actual    = actual,
     predicted = predicted
 )
-#> [1] 0.3963274
+#> [1] 0.4444274
 
 SLmetrics::rmse(
     actual    = actual,
     predicted = predicted
 )
-#> [1] 0.9120952
+#> [1] 1.026454
 ```
